@@ -36,6 +36,20 @@ Azure has support for multiple instances since version 3.70. It's great for any 
 * Ensure that the nopCommerce schedule tasks are run on one instance at a time. To configure this : 
   * For version 3.90 (and below), open the `web.config` file, find the **WebFarms** element, and set its **MultipleInstancesEnabled** attribute to *`true`*. If you use Microsoft Azure Websites (not cloud services), then set the **RunOnAzureWebsites** attribute to *`true`* as well.
   * For newer versions no configuration change is required because the task runner uses the distributed cache to ensure that tasks will run on one instance at a time.
+* When using [Azure Traffic Manager endpoint monitoring](https://docs.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring), set the Path to `/keepalive` instead of `/` to avoid creating a guest Customer every time the traffic manager calls the url. Another solution is to add Traffic Manager as a crawler in `App_Data/browscap.crawlersonly.xml`:
+
+```xml
+ <browscapitem name="Azure Traffic Manager Endpoint Monitor"> <!-- Azure Traffic Manager -->
+    <item name="Crawler" value="true" />
+  </browscapitem>
+```
+* When using [Azure App Service Always On](https://docs.microsoft.com/en-us/azure/app-service/configure-common?tabs=portal#configure-general-settings) functionality, it  will call the root url every 5 minutes, which can create a guest Customer on each request. This can be disabled by configuring the `Always On` User Agent as a crawler in `App_Data/browscap.crawlersonly.xml`:
+
+```xml
+<browscapitem name="AlwaysOn"> <!-- Azure AppService AlwaysOn -->
+  <item name="Crawler" value="true" />
+</browscapitem>
+```
 
 ## Installation process
 
